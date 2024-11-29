@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <style name="SearchSuggestionTextStyle">
+        <item name="android:textSize">@dimen/font_14</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:textColor">@color/black_87</item>
+        <item name="android:lineSpacingExtra">@dimen/font_6</item>
+        <item name="android:maxLines">1</item>
+        <item name="singleLine">true</item>
+        <item name="hintTextColor">@color/pale_grey</item>
+        <item name="maxLines">1</item>
+    </style>
+
+    <style name="SearchSuggestionBodyTextStyle">
+        <item name="android:textSize">@dimen/font_14</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:lineSpacingExtra">@dimen/font_6</item>
+        <item name="android:maxLines">1</item>
+        <item name="singleLine">true</item>
+        <item name="hintTextColor">@color/pale_grey</item>
+        <item name="maxLines">1</item>
+    </style>
+
+    <style name="SearchEditTextStyle">
+        <item name="android:textSize">@dimen/font_16</item>
+        <item name="android:letterSpacing">0.03</item>
+        <item name="android:textColor">@color/black_87</item>
+        <item name="editTextStyle">@color/black_87</item>
+        <item name="android:lineSpacingExtra">@dimen/font_12</item>
+        <item name="hintTextColor">@color/black</item>
+        <item name="android:inputType">text</item>
+    </style>
+
+    <style name="SearchBarViewStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/gray_50</item>
+        <item name="android:layout_marginTop">@dimen/searchbar_margin_14</item>
+    </style>
+
+    <style name="SearchBarDeviderStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/grey_45</item>
+    </style>
+
+    <dimen name="font_14">14sp</dimen>
+    <dimen name="font_6">6sp</dimen>
+    <dimen name="font_16">16sp</dimen>
+    <dimen name="font_12">12sp</dimen>
+</resources>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:id="@+id/clContainer"
+    android:background="@color/white_three"
+    android:layout_height="wrap_content">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivSuggesstion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/search_margin_16"
+        android:layout_marginEnd="@dimen/search_margin_16"
+        android:paddingTop="@dimen/search_margin_16"
+        android:paddingBottom="@dimen/search_margin_16"
+        app:layout_constraintStart_toEndOf="@id/tvSuggestion"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvSuggestion"
+        style="@style/SearchSuggestionTextStyle"
+        android:layout_width="@dimen/search_bar_margin_0"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/search_margin_16"
+        android:layout_marginTop="@dimen/searchbar_margin_14"
+        android:ellipsize="end"
+        app:layout_constraintEnd_toStartOf="@+id/ivArrow"
+        app:layout_constraintStart_toEndOf="@id/ivSuggesstion"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/search_margin_20"
+        android:paddingTop="@dimen/search_margin_16"
+        android:paddingBottom="@dimen/search_margin_12"
+        android:rotation="-90"
+        android:src="@drawable/ic_goto"
+        android:layout_marginBottom="@dimen/search_margin_14"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvSubTitle"
+        style="@style/SearchSuggestionBodyTextStyle"
+        android:layout_width="@dimen/margin_0"
+        android:layout_height="wrap_content"
+        app:layout_goneMarginBottom="@dimen/search_margin_14"
+        android:text="@string/vitae_auctor"
+        app:layout_constraintEnd_toStartOf="@+id/ivArrow"
+        app:layout_constraintStart_toEndOf="@id/tvSuggestion"
+        app:layout_constraintStart_toStartOf="@id/tvSuggestion"
+        app:layout_constraintTop_toBottomOf="@id/tvSuggestion" />
+
+    <View
+        android:id="@+id/divider"
+        style="@style/SearchBarViewStyle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tvSuggestion"
+        app:layout_constraintStart_toStartOf="@id/tvSuggestion"
+        app:layout_constraintTop_toBottomOf="@+id/tvSubTitle" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+

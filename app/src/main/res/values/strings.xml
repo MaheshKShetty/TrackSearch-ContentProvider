@@ -1,0 +1,29 @@
+<resources>
+
+    <string name="app_name">TrackSearch</string>
+    <string name="vitae_auctor">Search\n</string>
+    <string name="cd_up_button">Button\n</string>
+    <string name="search_hint">Search here\n</string>
+
+    <string-array name="search_screen">
+        <item>Search 1</item>
+        <item>Search 2</item>
+        <item>Search 3</item>
+        <item>Search 4</item>
+    </string-array>
+
+    <string-array name="suggestions">
+        <item>Lorem Ipsum</item>
+        <item>Lorem Ipsums</item>
+        <item>Lorem Ipsumss</item>
+    </string-array>
+
+    <string-array name="search_tab_title">
+        <item>All</item>
+        <item>Videos</item>
+        <item>Images</item>
+    </string-array>
+
+    <color name="transparent">#00FFFFFF</color>
+
+</resources>

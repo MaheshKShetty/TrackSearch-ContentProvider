@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#673ab7</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="scarlet">#b00020</color>
+    <color name="white_two">#f5f5f5</color>
+    <color name="white_three">#ffffff</color>
+    <color name="white_three_12">#1effffff</color>
+    <color name="white_three_60">#99ffffff</color>
+    <color name="search_layover_bg">@color/white_three</color>
+    <color name="search_field_bg">@color/white_three</color>
+    <color name="whiteish">#fffefefe</color>
+    <color name="gray_50">#88888888</color>
+    <color name="grey_45">#80000000</color>
+    <color name="search_white">@color/whiteish</color>
+    <color name="search_gray_50">@color/gray_50</color>
+    <color name="search_grey_45">@color/grey_45</color>
+    <color name="searchBarPrimaryColor">@color/white_three</color>
+    <color name="black_87">#de000000</color>
+    <color name="black_87_op_8">#14000000</color>
+    <color name="purple_blue">#6200EE</color>
+    <color name="pale_purple_light">#A3A3AC</color>
+    <color name="pale_grey">#eff0f2</color>
+    <color name="faq_group_text_color_purple_blue">@color/purple_blue</color>
+    <color name="faq_group_text_color_black_87">@color/black_87</color>
+</resources>

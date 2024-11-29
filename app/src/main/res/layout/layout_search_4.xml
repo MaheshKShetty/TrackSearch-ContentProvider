@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/pale_purple_light"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+   <com.mshetty.tracksearch.search.searchview.CustomSearchView
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/search_bar_margin_4"
+        android:layout_marginEnd="@dimen/search_bar_margin_4"
+        android:layout_marginStart="@dimen/search_bar_margin_4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/ic_search_top_cornered_bg"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="wrap_content" />
+
+   <com.google.android.material.tabs.TabLayout
+       android:id="@+id/tabs"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginStart="@dimen/search_bar_margin_4"
+       android:layout_marginEnd="@dimen/search_bar_margin_4"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintStart_toStartOf="@id/search_view"
+       app:layout_constraintTop_toBottomOf="@id/search_view" />
+
+   <androidx.constraintlayout.widget.ConstraintLayout
+       android:id="@+id/clDivider"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginStart="@dimen/search_bar_margin_4"
+       android:layout_marginEnd="@dimen/search_bar_margin_4"
+       android:background="@color/white_three"
+       app:layout_constraintStart_toStartOf="@id/tabs"
+       app:layout_constraintTop_toBottomOf="@id/tabs">
+
+    <View
+        style="@style/SearchBarDeviderStyle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/margin_0"
+        android:layout_marginStart="@dimen/search_bar_margin_4"
+        android:layout_marginEnd="@dimen/search_bar_margin_4"
+        android:background="@color/white_three"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clDivider" />
+</androidx.constraintlayout.widget.ConstraintLayout>
