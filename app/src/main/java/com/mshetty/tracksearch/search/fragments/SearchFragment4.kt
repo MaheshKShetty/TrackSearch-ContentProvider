@@ -25,7 +25,7 @@ class SearchFragment4 : Fragment(), CustomSearchView.OnTextChangeListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup? ,
-         savedInstanceState: Bundle?): View? {
+         savedInstanceState: Bundle?): View {
         binding = LayoutSearch4Binding.inflate(LayoutInflater.from(context), container, false)
         return binding.root
     }
