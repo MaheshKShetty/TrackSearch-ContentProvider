@@ -5,10 +5,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 
 import com.mshetty.tracksearch.search.fragments.SearchFragment
-import com.mshetty.tracksearch.search.fragments.SearchFragment4
-import com.mshetty.tracksearch.R
 import com.mshetty.tracksearch.databinding.ActivitySearchBinding
-import com.mshetty.tracksearch.databinding.LayoutSearchBinding
 import com.mshetty.tracksearch.search.adapter.ViewPagerAdapter
 import com.mshetty.tracksearch.search.data.Constants
 
