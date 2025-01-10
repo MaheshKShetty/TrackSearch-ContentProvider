@@ -49,7 +49,7 @@
         android:layout_width="@dimen/margin_0"
         android:layout_height="wrap_content"
         app:layout_goneMarginBottom="@dimen/search_margin_14"
-        android:text="@string/vitae_auctor"
+        android:text="@string/subtitle"
         app:layout_constraintEnd_toStartOf="@+id/ivArrow"
         app:layout_constraintStart_toEndOf="@id/tvSuggestion"
         app:layout_constraintStart_toStartOf="@id/tvSuggestion"

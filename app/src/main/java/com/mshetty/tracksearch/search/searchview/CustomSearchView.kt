@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.constraintlayout.widget.ConstraintLayout
-
 import com.mshetty.tracksearch.R
 import com.mshetty.tracksearch.databinding.LayoutSearchViewBinding
 import com.mshetty.tracksearch.search.searchview.Utils.hideKeyboard

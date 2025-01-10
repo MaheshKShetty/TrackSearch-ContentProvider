@@ -19,7 +19,7 @@ class SearchActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val fragmentList = ArrayList<Fragment>()
-        fragmentList.add(SearchFragment.newInstance(Constants.SEARCH_SCREEN1))
+        fragmentList.add(SearchFragment.newInstance())
         binding.viewPager.adapter = ViewPagerAdapter(this, fragmentList)
         binding.viewPager.currentItem = intent?.getIntExtra(Constants.POSITION, 0) ?: 0
     }
