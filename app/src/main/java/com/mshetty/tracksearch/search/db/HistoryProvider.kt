@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.UriMatcher
 import android.database.Cursor
 import android.net.Uri
-import android.os.AsyncTask
 import com.mshetty.tracksearch.search.data.Constants
 import com.mshetty.tracksearch.search.data.SearchEntity
 import kotlinx.coroutines.Dispatchers
@@ -18,9 +17,7 @@ class HistoryProvider : ContentProvider() {
     private var searchRoomDatabase: SearchRoomDatabase? = null
 
     override fun onCreate(): Boolean {
-        searchRoomDatabase = context?.let {
-            SearchRoomDatabase.getInstance(it)
-        }
+        searchRoomDatabase = context?.let { SearchRoomDatabase.getInstance(it) }
         return true
     }
 
@@ -32,146 +29,135 @@ class HistoryProvider : ContentProvider() {
         sortOrder: String?
     ): Cursor? {
         val context = context ?: throw IllegalStateException("Context is null")
-
         return runBlocking {
-            val cursor: Cursor? = when (sUriMatcher.match(uri)) {
+            when (sUriMatcher.match(uri)) {
                 SEARCH_HISTORY -> when (selection) {
-                    HistoryContract.HistoryEntry.COLUMN_IS_HISTORY -> {
-                        fetchSearchHistory(context)
-                    }
-
-                    HistoryContract.HistoryEntry.COLUMN_QUERY, HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE -> {
-                        fetchFilteredSearchResults(context, selectionArgs, selection, sortOrder)
-                    }
-
-                    else -> {
-                        fetchSearchHistory(context)
-                    }
+                    HistoryContract.HistoryEntry.COLUMN_IS_HISTORY -> fetchSearchHistory(context)
+                    HistoryContract.HistoryEntry.COLUMN_QUERY,
+                    HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE -> fetchFilteredSearchResults(context, selectionArgs, selection, sortOrder)
+                    else -> fetchSearchHistory(context)
                 }
-
                 else -> throw UnsupportedOperationException("Unknown Uri: $uri")
+            }.also { cursor ->
+                cursor?.setNotificationUri(context.contentResolver, uri)
             }
-
-            cursor?.setNotificationUri(context.contentResolver, uri)
-            cursor
         }
     }
-
 
     override fun getType(uri: Uri): String {
         return when (sUriMatcher.match(uri)) {
             SEARCH_HISTORY -> HistoryContract.HistoryEntry.CONTENT_TYPE
-            else -> throw UnsupportedOperationException("Uknown Uri: $uri")
+            else -> throw UnsupportedOperationException("Unknown Uri: $uri")
         }
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri {
-        val history: Int? = values?.getAsInteger(HistoryContract.HistoryEntry.COLUMN_IS_HISTORY)
-        val insertDate: Long? = values?.getAsLong(HistoryContract.HistoryEntry.COLUMN_INSERT_DATE)
-        val queryType: String? = values?.getAsString(HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE)
-        val query: String? = values?.getAsString(HistoryContract.HistoryEntry.COLUMN_QUERY)
-        val searchEntity = SearchEntity(query, queryType, insertDate, history)
-        val id: Long
-        val retUri: Uri
-        if (sUriMatcher.match(uri) == SEARCH_HISTORY) {
-            id = InsertSearchDataTask(context, searchEntity).execute().get()
-            retUri = if (id > 0) {
+        val searchEntity = values?.let {
+            SearchEntity(
+                columnQuery = it.getAsString(HistoryContract.HistoryEntry.COLUMN_QUERY),
+                queryType = it.getAsString(HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE),
+                insertDate = it.getAsLong(HistoryContract.HistoryEntry.COLUMN_INSERT_DATE),
+                isHistory = it.getAsInteger(HistoryContract.HistoryEntry.COLUMN_IS_HISTORY)
+            )
+        } ?: throw IllegalArgumentException("Invalid content values")
+
+        return if (sUriMatcher.match(uri) == SEARCH_HISTORY) {
+            val id = runBlocking {
+                insertSearchEntity(context, searchEntity)
+            }
+            if (id > 0) {
                 HistoryContract.HistoryEntry.buildHistoryUri(id)
             } else {
-                throw UnsupportedOperationException("Unable to insert rows into: $uri")
+                throw UnsupportedOperationException("Failed to insert rows into: $uri")
             }
         } else {
-            throw UnsupportedOperationException("Unknown uri: $uri")
+            throw UnsupportedOperationException("Unknown Uri: $uri")
         }
-        return retUri
     }
 
     override fun update(
-        uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<String>?
+        uri: Uri,
+        values: ContentValues?,
+        selection: String?,
+        selectionArgs: Array<String>?
     ): Int {
         return runBlocking {
-            val rows: Int = when (sUriMatcher.match(uri)) {
+            when (sUriMatcher.match(uri)) {
                 SEARCH_HISTORY -> deleteAndUpdateDb(context)
-                else -> throw UnsupportedOperationException("Unknown uri: $uri")
+                else -> throw UnsupportedOperationException("Unknown Uri: $uri")
+            }.also { rows ->
+                if (rows > 0) {
+                    context?.contentResolver?.notifyChange(uri, null)
+                }
             }
-            if (rows != 0) {
-                val context = context
-                context?.contentResolver?.notifyChange(uri, null)
-            }
-            rows
         }
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
         return runBlocking {
-            val rows: Int = when (sUriMatcher.match(uri)) {
+            when (sUriMatcher.match(uri)) {
                 SEARCH_HISTORY -> deleteAndUpdateDb(context)
-                else -> throw UnsupportedOperationException("Unknown uri: $uri")
+                else -> throw UnsupportedOperationException("Unknown Uri: $uri")
+            }.also { rows ->
+                if (rows > 0) {
+                    context?.contentResolver?.notifyChange(uri, null)
+                }
             }
-            if (selection == null || rows != 0) {
-                val context = context
-                context?.contentResolver?.notifyChange(uri, null)
-            }
-             rows
         }
     }
 
     companion object {
         private const val SEARCH_HISTORY = 100
-        private val sUriMatcher = buildUriMatcher()
-
-        private fun buildUriMatcher(): UriMatcher {
+        private val sUriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
             val content = HistoryContract.CONTENT_AUTHORITY
-            val matcher = UriMatcher(UriMatcher.NO_MATCH)
-            matcher.addURI(content, HistoryContract.PATH_HISTORY, SEARCH_HISTORY)
-            return matcher
+            addURI(content, HistoryContract.PATH_HISTORY, SEARCH_HISTORY)
         }
     }
 }
 
-class InsertSearchDataTask(var context: Context?, private var searchEntity: SearchEntity) :
-    AsyncTask<Void, Void, Long>() {
-    private var _id: Long = 0
-    override fun doInBackground(vararg p0: Void?): Long {
-        context?.applicationContext?.let {
-            _id = SearchRoomDatabase.getInstance(it).searchDao().insert(searchEntity)
-        }
-        return _id
-    }
+// Suspend Functions
 
-}
-
-suspend fun fetchSearchHistory(context: Context, limit: Int = 5): Cursor {
+suspend fun fetchSearchHistory(context: Context, limit: Int = 25): Cursor {
     return withContext(Dispatchers.IO) {
         SearchRoomDatabase.getInstance(context).searchDao().getHistory(limit)
     }
 }
 
 suspend fun fetchFilteredSearchResults(
-    context: Context?, selectionArgs: Array<String>?, selection: String?, sortOrder: String?
+    context: Context?,
+    selectionArgs: Array<String>?,
+    selection: String?,
+    sortOrder: String?
 ): Cursor? {
     return withContext(Dispatchers.IO) {
-        val database = context?.let { SearchRoomDatabase.getInstance(it) }
-        when (selection) {
-            HistoryContract.HistoryEntry.COLUMN_QUERY -> {
-                if (sortOrder == null || sortOrder == Constants.ALL) {
-                    database?.searchDao()?.getSearchFilter(selectionArgs)
-                } else {
-                    database?.searchDao()?.getSearchFilter(selectionArgs, sortOrder)
+        context?.let {
+            val database = SearchRoomDatabase.getInstance(it)
+            when (selection) {
+                HistoryContract.HistoryEntry.COLUMN_QUERY -> {
+                    if (sortOrder == null || sortOrder == Constants.ALL) {
+                        database.searchDao().getSearchFilter(selectionArgs)
+                    } else {
+                        database.searchDao().getSearchFilter(selectionArgs, sortOrder)
+                    }
                 }
+                else -> database.searchDao().getSearchFilterOnType(selectionArgs)
             }
-
-            else -> database?.searchDao()?.getSearchFilterOnType(selectionArgs)
         }
     }
 }
 
+suspend fun insertSearchEntity(context: Context?, searchEntity: SearchEntity): Long {
+    return withContext(Dispatchers.IO) {
+        context?.let {
+            SearchRoomDatabase.getInstance(it).searchDao().insert(searchEntity)
+        } ?: 0
+    }
+}
 
 suspend fun deleteAndUpdateDb(context: Context?): Int {
     return withContext(Dispatchers.IO) {
         context?.let {
-            val id = 0
-            id
+            0
         } ?: 0
     }
 }

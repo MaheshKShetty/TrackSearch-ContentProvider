@@ -18,11 +18,6 @@ object SearchHistoryUtil {
         return cursor
     }
 
-    fun getSearchType(context : Context,searchType : String) : Cursor? {
-        cursor = getCursor(context , HistoryContract.HistoryEntry.CONTENT_URI ,
-            null , HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE , searchType , null)
-        return cursor
-    }
 
     fun saveQueryToDb(context: Context, query: String?, time: Long, type: String?) {
         if (!TextUtils.isEmpty(query) && time > 0) {

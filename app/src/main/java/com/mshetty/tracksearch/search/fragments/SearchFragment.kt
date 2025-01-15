@@ -46,7 +46,12 @@ class SearchFragment : Fragment(), CustomSearchView.OnTextChangeListener {
         }
         val arr = resources.getStringArray(R.array.suggestions)
         context?.let { SearchHistoryUtil.addSuggestions(it, arr.toList(), Constants.ALL) }
-        adapter = SearchAdapter(context, SearchHistoryUtil.cursor, 0)
+        val cursor = SearchHistoryUtil.getCursor(
+            context, HistoryContract.HistoryEntry.CONTENT_URI,
+            null, HistoryContract.HistoryEntry.COLUMN_IS_HISTORY,
+            null, null
+        )
+        adapter = SearchAdapter(context,cursor, 0)
         adapter.filterQueryProvider = FilterQueryProvider { constraint ->
             val filter: String = constraint.toString()
             if (filter.isEmpty()) {
