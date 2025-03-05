@@ -155,9 +155,5 @@ suspend fun insertSearchEntity(context: Context?, searchEntity: SearchEntity): L
 }
 
 suspend fun deleteAndUpdateDb(context: Context?): Int {
-    return withContext(Dispatchers.IO) {
-        context?.let {
-            0
-        } ?: 0
-    }
+    return 0
 }
