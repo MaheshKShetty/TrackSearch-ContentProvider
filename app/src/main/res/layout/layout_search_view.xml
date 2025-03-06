@@ -42,6 +42,7 @@
         android:background="?android:attr/selectableItemBackground"
         android:paddingTop="@dimen/search_margin_16"
         android:paddingBottom="@dimen/search_margin_12"
+        android:visibility="gone"
         android:src="@drawable/ic_action_navigation_close"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -14,5 +14,8 @@
 
 
     <color name="transparent">#00FFFFFF</color>
+    <string name="exit_dialog">Are you sure you want to exit?</string>
+    <string name="exit">"Exit"</string>
+    <string name="cancel">"Cancel"</string>
 
 </resources>
