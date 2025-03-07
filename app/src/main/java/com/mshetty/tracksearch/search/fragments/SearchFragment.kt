@@ -1,5 +1,6 @@
 package com.mshetty.tracksearch.search.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.FilterQueryProvider
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.fragment.app.Fragment
 import com.mshetty.tracksearch.search.adapter.SearchAdapter
 import com.mshetty.tracksearch.search.data.SearchHistoryUtil
@@ -100,6 +102,24 @@ class SearchFragment : Fragment(), CustomSearchView.OnTextChangeListener {
                 Constants.ALL
             )
         }
+    }
+
+    override fun onBackPressed() {
+        showExitDialog()
+    }
+
+    private fun showExitDialog() {
+        AlertDialog.Builder(context)
+            .setTitle("Exit App")
+            .setMessage(context?.getString(R.string.exit_dialog))
+            .setPositiveButton(context?.getString(R.string.exit)) { _,_ ->
+                this.activity?.let { finishAffinity(it) }
+            }
+            .setNegativeButton(context?.getString(R.string.cancel)) { dialog,_->
+                dialog.dismiss()
+            }
+            .setCancelable(false)
+            .show()
     }
 
 }

@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import com.mshetty.tracksearch.R
 import com.mshetty.tracksearch.databinding.LayoutSearchViewBinding
 import com.mshetty.tracksearch.search.searchview.Utils.hideKeyboard
@@ -53,6 +54,11 @@ class CustomSearchView @JvmOverloads constructor(
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                if (s.toString().isEmpty()) {
+                  binding?.actionClear?.isVisible = false
+                } else {
+                    binding?.actionClear?.isVisible = true
+                }
                 onTextChangeListener?.onTextChanged(s.toString())
             }
 
@@ -110,12 +116,14 @@ class CustomSearchView @JvmOverloads constructor(
     interface OnTextChangeListener {
         fun onTextChanged(s: String)
         fun onQuerySubmit(s: String)
+        fun onBackPressed()
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.action_back -> {
                 closeSearch()
+                onTextChangeListener?.onBackPressed()
             }
             R.id.action_clear -> {
                 binding?.etSearch?.setText("")
