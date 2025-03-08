@@ -1,32 +1,35 @@
 package com.mshetty.tracksearch.search.fragments
 
 import android.app.AlertDialog
+import android.database.Cursor
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.FilterQueryProvider
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.fragment.app.Fragment
-import com.mshetty.tracksearch.search.adapter.SearchAdapter
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.mshetty.tracksearch.R
+import com.mshetty.tracksearch.databinding.LayoutSearchBinding
+import com.mshetty.tracksearch.search.adapter.SearchHistoryItem
+import com.mshetty.tracksearch.search.adapter.SearchRecyclerAdapter
+import com.mshetty.tracksearch.search.data.Constants
 import com.mshetty.tracksearch.search.data.SearchHistoryUtil
 import com.mshetty.tracksearch.search.db.HistoryContract
 import com.mshetty.tracksearch.search.searchview.CustomSearchView
-import com.mshetty.tracksearch.R
-import com.mshetty.tracksearch.databinding.LayoutSearchBinding
-import com.mshetty.tracksearch.search.data.Constants
 
 class SearchFragment : Fragment(), CustomSearchView.OnTextChangeListener {
 
-    private lateinit var adapter: SearchAdapter
+    private lateinit var adapter: SearchRecyclerAdapter
     private lateinit var binding: LayoutSearchBinding
 
     companion object {
         fun newInstance(): SearchFragment {
-            val fragment = SearchFragment()
-            return fragment
+            return SearchFragment()
         }
     }
 
@@ -34,73 +37,60 @@ class SearchFragment : Fragment(), CustomSearchView.OnTextChangeListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = LayoutSearchBinding.inflate(LayoutInflater.from(context), container, false)
+        binding = LayoutSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.searchView.setOnTextChangeListener(this)
         binding.searchView.background = context?.let {
-            AppCompatResources.getDrawable(
-                it,
-                R.drawable.ic_search_bottom_cornered_bg
-            )
+            AppCompatResources.getDrawable(it, R.drawable.ic_search_bottom_cornered_bg)
         }
-        val arr = resources.getStringArray(R.array.suggestions)
-        context?.let { SearchHistoryUtil.addSuggestions(it, arr.toList(), Constants.ALL) }
-        val cursor = SearchHistoryUtil.getCursor(
-            context, HistoryContract.HistoryEntry.CONTENT_URI,
-            null, HistoryContract.HistoryEntry.COLUMN_IS_HISTORY,
-            null, null
+
+        binding.suggestionList.layoutManager = LinearLayoutManager(context)
+        adapter = SearchRecyclerAdapter(
+            context,
+            null,
+            onItemClick = { suggestion -> binding.searchView.setQuery(suggestion) },
+            onItemDelete = { query -> deleteItemFromDatabase(query) }
         )
-        adapter = SearchAdapter(context,cursor, 0)
-        adapter.filterQueryProvider = FilterQueryProvider { constraint ->
-            val filter: String = constraint.toString()
-            if (filter.isEmpty()) {
-                SearchHistoryUtil.getCursor(
-                    context, HistoryContract.HistoryEntry.CONTENT_URI,
-                    null, HistoryContract.HistoryEntry.COLUMN_IS_HISTORY,
-                    null, null
-                )
-            } else {
-                SearchHistoryUtil.getCursor(
-                    context,
-                    (HistoryContract.HistoryEntry.CONTENT_URI),
-                    null, HistoryContract.HistoryEntry.COLUMN_QUERY,
-                    "%$filter%", null
-                )
-            }
-        }
+        loadSuggestions()
         binding.suggestionList.adapter = adapter
-        binding.suggestionList.isTextFilterEnabled = true
-        binding.suggestionList.onItemClickListener =
-            AdapterView.OnItemClickListener { _, _, position, _ ->
-                val suggestion: String = getSuggestionAtPosition(position)
-                binding.searchView.setQuery(suggestion)
-        }
+
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean = false
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                adapter.deleteItem(viewHolder.adapterPosition)
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(binding.suggestionList)
     }
 
-    private fun getSuggestionAtPosition(position: Int): String {
-        return if (position < 0 || position >= adapter.count) {
-            ""
-        } else {
-            adapter.getItem(position).toString()
-        }
+    private fun loadSuggestions(filter: String? = null) {
+        val uri = HistoryContract.HistoryEntry.CONTENT_URI
+        val selection = if (filter.isNullOrEmpty()) null else "${HistoryContract.HistoryEntry.COLUMN_QUERY} LIKE ?"
+        val selectionArgs = if (filter.isNullOrEmpty()) null else arrayOf("%$filter%")
+        val cursor: Cursor? = context?.contentResolver?.query(uri, null, selection, selectionArgs, null)
+        adapter.swapCursor(cursor)
+    }
+
+    private fun deleteItemFromDatabase(query: String) {
+        context?.let { SearchHistoryUtil.deleteItemFromDatabase(it,query) }
+
     }
 
     override fun onTextChanged(s: String) {
-        adapter.filter.filter(s)
-        adapter.notifyDataSetChanged()
+        loadSuggestions(s)
     }
 
     override fun onQuerySubmit(s: String) {
         context?.let {
-            SearchHistoryUtil.saveQueryToDb(
-                it,
-                s,
-                System.currentTimeMillis(),
-                Constants.ALL
-            )
+            SearchHistoryUtil.saveQueryToDb(it, s, System.currentTimeMillis(), Constants.ALL)
         }
     }
 
@@ -111,15 +101,14 @@ class SearchFragment : Fragment(), CustomSearchView.OnTextChangeListener {
     private fun showExitDialog() {
         AlertDialog.Builder(context)
             .setTitle("Exit App")
-            .setMessage(context?.getString(R.string.exit_dialog))
-            .setPositiveButton(context?.getString(R.string.exit)) { _,_ ->
-                this.activity?.let { finishAffinity(it) }
+            .setMessage(getString(R.string.exit_dialog))
+            .setPositiveButton(getString(R.string.exit)) { _, _ ->
+                activity?.let { finishAffinity(it) }
             }
-            .setNegativeButton(context?.getString(R.string.cancel)) { dialog,_->
+            .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
             .setCancelable(false)
             .show()
     }
-
 }

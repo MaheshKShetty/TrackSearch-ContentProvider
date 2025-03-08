@@ -6,71 +6,78 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CursorAdapter
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.RecyclerView
 import com.mshetty.tracksearch.R
 import com.mshetty.tracksearch.search.db.HistoryContract
 
-class SearchAdapter(val context: Context?, cursor: Cursor?, flags: Int = 0) :
-    CursorAdapter(context, cursor, flags) {
+class SearchRecyclerAdapter(
+    private val context: Context?,
+    private var cursor: Cursor?,
+    private val onItemClick: (String) -> Unit,
+    private val onItemDelete: (String) -> Unit
+) : RecyclerView.Adapter<SearchRecyclerAdapter.ViewHolder>() {
 
-    override fun newView(context: Context, cursor: Cursor, parent: ViewGroup): View {
-        return LayoutInflater.from(context).inflate(R.layout.layout_search_item, parent, false)
-    }
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val ivSuggestion: AppCompatImageView = itemView.findViewById(R.id.ivSuggesstion)
+        private val tvSuggestion: AppCompatTextView = itemView.findViewById(R.id.tvSuggestion)
+        private val clContainer: ConstraintLayout = itemView.findViewById(R.id.clContainer)
+        private var divider: View? = itemView.findViewById(R.id.divider)
 
-    override fun bindView(view: View, context: Context, cursor: Cursor) {
-        val viewHolder = ListViewHolder(view)
-        view.tag = viewHolder
-        val text =
-            cursor.getString(cursor.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_QUERY))
-        val isHistory =
-            cursor.getInt(cursor.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_IS_HISTORY)) != 0
-        val searchType =
-            cursor.getString(cursor.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE))
-        val isLastItem = cursor.isLast
-        val historyItem = SearchHistoryItem(text, isHistory, searchType, isLastItem)
-        viewHolder.bindItem(historyItem)
-    }
+        fun bind(cursor: Cursor) {
+            val text = cursor.getString(cursor.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_QUERY))
+            val isHistory = cursor.getInt(cursor.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_IS_HISTORY)) != 0
+            val searchType = cursor.getString(cursor.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE))
+            val isLastItem = cursor.isLast
+            val historyItem = SearchHistoryItem(text, isHistory, searchType, isLastItem)
 
-    override fun getItem(position: Int): Any {
-        var retString = ""
-        val cursor = cursor
-        if (cursor != null && !cursor.isClosed) {
-            if (cursor.moveToPosition(position)) {
-                retString =
-                    cursor.getString(cursor.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_QUERY))
-            }
-        }
-        return retString
-    }
-
-    private inner class ListViewHolder(val convertView: View) {
-        private val ivSuggestion: AppCompatImageView = convertView.findViewById(R.id.ivSuggesstion)
-        private val tvSuggestion: AppCompatTextView = convertView.findViewById(R.id.tvSuggestion)
-        private val clContainer: ConstraintLayout = convertView.findViewById(R.id.clContainer)
-        private var divider: View? = null
-
-        fun bindItem(item: SearchHistoryItem) {
-            tvSuggestion.text = item.text
+            tvSuggestion.text = historyItem.text
             tvSuggestion.setTextColor(Color.BLACK)
-            divider = convertView.findViewById(R.id.divider)
-            if (item.isLastItem) {
+
+            if (historyItem.isLastItem) {
                 clContainer.background = context?.let {
-                    AppCompatResources.getDrawable(
-                        it,
-                        R.drawable.ic_search_bottom_cornered_bg
-                    )
+                    AppCompatResources.getDrawable(it, R.drawable.ic_search_bottom_cornered_bg)
                 }
             } else {
                 context?.getColor(R.color.white_three)?.let { clContainer.setBackgroundColor(it) }
             }
-            val iconRes =
-                if (item.isHistory) R.drawable.ic_search_history_white else R.drawable.ic_search_history_white
-            ivSuggestion.setImageResource(iconRes)
+
+            ivSuggestion.setImageResource(if (historyItem.isHistory) R.drawable.ic_search_history_white else R.drawable.ic_search_history_white)
+
+            // Handle item click
+            itemView.setOnClickListener {
+                onItemClick(historyItem.text)
+            }
         }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.layout_search_item, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        cursor?.moveToPosition(position)
+        cursor?.let { holder.bind(it) }
+    }
+
+    override fun getItemCount(): Int = cursor?.count ?: 0
+
+    fun swapCursor(newCursor: Cursor?) {
+        cursor?.close()
+        cursor = newCursor
+        notifyDataSetChanged()
+    }
+
+    fun deleteItem(position: Int) {
+        cursor?.moveToPosition(position)
+        val query = cursor?.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_QUERY)
+            ?.let { cursor?.getString(it) }
+        query?.let { onItemDelete(it) }
     }
 }
 

@@ -5,18 +5,13 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.text.TextUtils
+import android.util.Log
 import com.mshetty.tracksearch.search.db.HistoryContract
 import java.util.ArrayList
 
 object SearchHistoryUtil {
 
-    var cursor : Cursor? = null
 
-    private fun setCursor(context : Context) : Cursor? {
-        cursor = getCursor(context , HistoryContract.HistoryEntry.CONTENT_URI ,
-            null , HistoryContract.HistoryEntry.COLUMN_IS_HISTORY , null , null)
-        return cursor
-    }
 
 
     fun saveQueryToDb(context: Context, query: String?, time: Long, type: String?) {
@@ -28,7 +23,16 @@ object SearchHistoryUtil {
             values.put(HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE,type)
             context.contentResolver.insert(HistoryContract.HistoryEntry.CONTENT_URI,values)
         }
-        setCursor(context)
+    }
+
+     fun deleteItemFromDatabase(context: Context,query: String) {
+        val uri = HistoryContract.HistoryEntry.CONTENT_URI
+        val rowsDeleted = context.contentResolver.delete(
+            uri,
+            "${HistoryContract.HistoryEntry.COLUMN_QUERY} = ?",
+            arrayOf(query)
+        )
+        Log.d("TAG", "rowsDeleted${rowsDeleted}")
     }
 
     fun addSuggestions(context : Context,suggestions : List<String?>,type:String) {
@@ -43,12 +47,6 @@ object SearchHistoryUtil {
         }
         val values : Array<ContentValues> = toSave.toTypedArray()
         context.contentResolver.bulkInsert(HistoryContract.HistoryEntry.CONTENT_URI,values)
-        setCursor(context)
     }
 
-    fun getCursor(context : Context?, uri : Uri, projection : String?, selection : String?,
-                  selectionArgs : String?, sortOrder : String?) : Cursor? {
-        cursor = context?.contentResolver?.query(uri, arrayOf(projection), selection, arrayOf(selectionArgs), sortOrder)
-        return cursor
-    }
 }
