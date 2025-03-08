@@ -12,8 +12,6 @@ import java.util.ArrayList
 object SearchHistoryUtil {
 
 
-
-
     fun saveQueryToDb(context: Context, query: String?, time: Long, type: String?) {
         if (!TextUtils.isEmpty(query) && time > 0) {
             val values = ContentValues()
@@ -25,28 +23,15 @@ object SearchHistoryUtil {
         }
     }
 
-     fun deleteItemFromDatabase(context: Context,query: String) {
-        val uri = HistoryContract.HistoryEntry.CONTENT_URI
+    fun deleteItemFromDatabase(context: Context, query: String) {
         val rowsDeleted = context.contentResolver.delete(
-            uri,
+            HistoryContract.HistoryEntry.CONTENT_URI,
             "${HistoryContract.HistoryEntry.COLUMN_QUERY} = ?",
-            arrayOf(query)
+            arrayOf(query.trim())
         )
-        Log.d("TAG", "rowsDeleted${rowsDeleted}")
-    }
-
-    fun addSuggestions(context : Context,suggestions : List<String?>,type:String) {
-        val toSave : ArrayList<ContentValues> = ArrayList()
-        for (str : String? in suggestions) {
-            val value = ContentValues()
-            value.put(HistoryContract.HistoryEntry.COLUMN_QUERY,str)
-            value.put(HistoryContract.HistoryEntry.COLUMN_INSERT_DATE,System.currentTimeMillis())
-            value.put(HistoryContract.HistoryEntry.COLUMN_IS_HISTORY,0)
-            value.put(HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE ,type)
-            toSave.add(value)
+        if(rowsDeleted == -1){
+            Log.e("TAG", "Error deleting item from database");
         }
-        val values : Array<ContentValues> = toSave.toTypedArray()
-        context.contentResolver.bulkInsert(HistoryContract.HistoryEntry.CONTENT_URI,values)
     }
 
 }

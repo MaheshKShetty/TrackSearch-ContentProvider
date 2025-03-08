@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mshetty.tracksearch.R
 import com.mshetty.tracksearch.databinding.LayoutSearchBinding
-import com.mshetty.tracksearch.search.adapter.SearchHistoryItem
 import com.mshetty.tracksearch.search.adapter.SearchRecyclerAdapter
 import com.mshetty.tracksearch.search.data.Constants
 import com.mshetty.tracksearch.search.data.SearchHistoryUtil

@@ -96,7 +96,14 @@ class HistoryProvider : ContentProvider() {
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<String>?): Int {
         return runBlocking {
             when (sUriMatcher.match(uri)) {
-                SEARCH_HISTORY -> deleteAndUpdateDb(context)
+                SEARCH_HISTORY -> {
+                    context?.let {
+                        withContext(Dispatchers.IO) {
+                            selectionArgs?.let { it1 -> searchRoomDatabase?.searchDao()?.delete(it1) }
+                                ?: 0
+                        }
+                    } ?: 0
+                }
                 else -> throw UnsupportedOperationException("Unknown Uri: $uri")
             }.also { rows ->
                 if (rows > 0) {
