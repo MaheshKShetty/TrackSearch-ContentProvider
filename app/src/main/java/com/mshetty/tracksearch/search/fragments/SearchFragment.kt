@@ -64,7 +64,6 @@ class SearchFragment : Fragment(), CustomSearchView.OnTextChangeListener {
         val swipeCallback = SwipeToDeleteCallback(adapter) { position, action ->
             when (action) {
                 SwipeAction.DELETE -> {
-                    Log.d("TAG","Swipe action clicked")
                     adapter.deleteItem(position)
                 }
                 SwipeAction.EDIT -> {
