@@ -24,7 +24,7 @@
         <provider
             android:name=".search.db.HistoryProvider"
             android:authorities="com.mshetty.tracksearch.search.searchhistorydatabase"
-            android:exported="true"
+            android:exported="false"
             android:protectionLevel="signature"
             android:syncable="true" />
     </application>

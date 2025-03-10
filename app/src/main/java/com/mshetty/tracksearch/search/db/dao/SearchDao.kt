@@ -13,8 +13,8 @@ interface SearchDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(search: SearchEntity): Long
 
-    @Delete
-    fun delete(search: SearchEntity): Int
+    @Query("DELETE FROM SEARCH_HISTORY WHERE `query` LIKE :selectionArgs")
+    fun delete(selectionArgs: Array<String>): Int
 
     @Update
     fun update(search: SearchEntity): Int
