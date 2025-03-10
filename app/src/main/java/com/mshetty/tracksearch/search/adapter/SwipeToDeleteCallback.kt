@@ -3,6 +3,10 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Rect
+import android.view.MotionEvent
+import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.mshetty.tracksearch.R
@@ -28,12 +32,7 @@ class SwipeToDeleteCallback(
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        val position = viewHolder.adapterPosition
-        val itemView = viewHolder.itemView
-        val threshold = itemView.width / 2
-
-        val action = if (viewHolder.itemView.translationX < -threshold) SwipeAction.EDIT else SwipeAction.DELETE
-        onSwipeAction(position, action)
+        // Swipe action is handled, but we no longer need to rely on swipe for delete/edit
     }
 
     override fun onChildDraw(
@@ -81,6 +80,53 @@ class SwipeToDeleteCallback(
         }
 
         super.onChildDraw(c, recyclerView, viewHolder, clampedDx, dY, actionState, isCurrentlyActive)
+    }
+
+    // This method checks if the user clicked on the delete or edit icon
+    fun onItemClick(viewHolder: RecyclerView.ViewHolder, x: Float, y: Float) {
+        val itemView = viewHolder.itemView
+        val deleteIconRect = getIconRect(itemView, deleteIcon)
+        val editIconRect = getIconRect(itemView, editIcon)
+
+        // Check if the click happened inside the delete or edit icon
+        if (deleteIconRect.contains(x.toInt(), y.toInt())) {
+            val position = viewHolder.adapterPosition
+            onSwipeAction(position, SwipeAction.DELETE)
+            Toast.makeText(itemView.context, "Item Deleted", Toast.LENGTH_SHORT).show()
+        } else if (editIconRect.contains(x.toInt(), y.toInt())) {
+            val position = viewHolder.adapterPosition
+            onSwipeAction(position, SwipeAction.EDIT)
+            Toast.makeText(itemView.context, "Item Edited", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Helper function to get the bounding rectangle of the icons
+    private fun getIconRect(itemView: View, icon: Int): Rect {
+        val iconBitmap = BitmapFactory.decodeResource(itemView.context.resources, icon)
+        val iconWidth = iconBitmap.width
+        val iconHeight = iconBitmap.height
+        val threshold = itemView.width / 2
+        val iconPadding = 20
+
+        // For delete icon
+        if (icon == deleteIcon) {
+            return Rect(
+                itemView.right - iconPadding - iconWidth,
+                itemView.top + (itemView.height - iconHeight) / 2,
+                itemView.right - iconPadding,
+                itemView.top + (itemView.height + iconHeight) / 2
+            )
+        }
+        // For edit icon
+        else if (icon == editIcon) {
+            return Rect(
+                itemView.right - threshold / 2 - iconPadding - iconWidth,
+                itemView.top + (itemView.height - iconHeight) / 2,
+                itemView.right - threshold / 2 - iconPadding,
+                itemView.top + (itemView.height + iconHeight) / 2
+            )
+        }
+        return Rect()
     }
 }
 

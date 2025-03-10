@@ -64,12 +64,24 @@ class SearchFragment : Fragment(), CustomSearchView.OnTextChangeListener {
         val swipeCallback = SwipeToDeleteCallback(adapter) { position, action ->
             when (action) {
                 SwipeAction.DELETE -> {
+                    Log.d("TAG","DELETE ACTION CLIKED")
                     adapter.deleteItem(position)
                 }
                 SwipeAction.EDIT -> {
 
                 }
             }
+        }
+
+        binding.suggestionList.setOnTouchListener { v, event ->
+            val childView = binding.suggestionList.findChildViewUnder(event.x, event.y)
+            if (childView != null) {
+                val viewHolder = binding.suggestionList.getChildViewHolder(childView)
+                if (event.action == MotionEvent.ACTION_UP) {
+                    swipeCallback.onItemClick(viewHolder, event.x, event.y)
+                }
+            }
+            true
         }
 
         val itemTouchHelper = ItemTouchHelper(swipeCallback)
