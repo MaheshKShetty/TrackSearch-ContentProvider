@@ -1,10 +1,13 @@
 package com.mshetty.tracksearch.search.fragments
 
+import SwipeToDeleteCallback
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.database.Cursor
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
@@ -40,6 +43,7 @@ class SearchFragment : Fragment(), CustomSearchView.OnTextChangeListener {
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.searchView.setOnTextChangeListener(this)
         binding.searchView.background = context?.let {
@@ -56,17 +60,20 @@ class SearchFragment : Fragment(), CustomSearchView.OnTextChangeListener {
         loadSuggestions()
         binding.suggestionList.adapter = adapter
 
-        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean = false
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                adapter.deleteItem(viewHolder.adapterPosition)
+        val swipeCallback = SwipeToDeleteCallback(adapter) { position, action ->
+            when (action) {
+                SwipeAction.DELETE -> {
+                    Log.d("TAG","Swipe action clicked")
+                    adapter.deleteItem(position)
+                }
+                SwipeAction.EDIT -> {
+
+                }
             }
-        })
+        }
+
+        val itemTouchHelper = ItemTouchHelper(swipeCallback)
         itemTouchHelper.attachToRecyclerView(binding.suggestionList)
     }
 
