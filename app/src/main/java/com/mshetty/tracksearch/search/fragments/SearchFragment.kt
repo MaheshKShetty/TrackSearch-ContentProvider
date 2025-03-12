@@ -65,9 +65,7 @@ class SearchFragment : Fragment(), CustomSearchView.OnTextChangeListener {
             when (action) {
                 SwipeAction.DELETE -> {
                     adapter.deleteItem(position)
-                }
-                SwipeAction.EDIT -> {
-
+                    loadSuggestions()
                 }
             }
         }

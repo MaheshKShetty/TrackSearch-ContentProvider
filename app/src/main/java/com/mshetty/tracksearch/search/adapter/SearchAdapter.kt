@@ -78,6 +78,7 @@ class SearchRecyclerAdapter(
         val query = cursor?.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_QUERY)
             ?.let { cursor?.getString(it) }
         query?.let { onItemDelete(it) }
+        this.notifyItemRemoved(position)
     }
 }
 
