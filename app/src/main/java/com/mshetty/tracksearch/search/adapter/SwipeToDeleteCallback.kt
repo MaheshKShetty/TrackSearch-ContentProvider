@@ -21,7 +21,6 @@ class SwipeToDeleteCallback(
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        // Handle the swipe and call delete action when swiped
         val position = viewHolder.adapterPosition
         onSwipeAction(position, SwipeAction.DELETE)
     }
@@ -40,10 +39,18 @@ class SwipeToDeleteCallback(
 
         if (dX < 0) {
             paint.color = deleteBackgroundColor
+
             c.drawRect(
                 itemView.right + dX, itemView.top.toFloat(),
                 itemView.right.toFloat(), itemView.bottom.toFloat(), paint
             )
+            paint.color = Color.WHITE
+            paint.textSize = 40f
+            paint.textAlign = Paint.Align.CENTER
+
+            val textX = itemView.right + dX / 2
+            val textY = itemView.top + itemView.height / 2f
+            c.drawText("Deleting...", textX, textY, paint)
         }
 
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
