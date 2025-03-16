@@ -54,11 +54,7 @@ class CustomSearchView @JvmOverloads constructor(
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                if (s.toString().isEmpty()) {
-                  binding?.actionClear?.isVisible = false
-                } else {
-                    binding?.actionClear?.isVisible = true
-                }
+                binding?.actionClear?.isVisible = s.toString().isNotEmpty()
                 onTextChangeListener?.onTextChanged(s.toString())
             }
 

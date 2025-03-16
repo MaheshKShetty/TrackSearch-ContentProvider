@@ -30,7 +30,7 @@ object SearchHistoryUtil {
             arrayOf(query.trim())
         )
         if(rowsDeleted == -1){
-            Log.e("TAG", "Error deleting item from database");
+            Log.e("TAG", "Error deleting item from database")
         }
     }
 

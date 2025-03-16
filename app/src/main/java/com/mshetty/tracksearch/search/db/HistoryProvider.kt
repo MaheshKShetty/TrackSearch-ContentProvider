@@ -122,8 +122,6 @@ class HistoryProvider : ContentProvider() {
     }
 }
 
-// Suspend Functions
-
 suspend fun fetchSearchHistory(context: Context, limit: Int = 25): Cursor {
     return withContext(Dispatchers.IO) {
         SearchRoomDatabase.getInstance(context).searchDao().getHistory(limit)
