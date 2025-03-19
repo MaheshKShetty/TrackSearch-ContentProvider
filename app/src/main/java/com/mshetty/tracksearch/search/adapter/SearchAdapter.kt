@@ -28,9 +28,12 @@ class SearchRecyclerAdapter(
         private var divider: View? = itemView.findViewById(R.id.divider)
 
         fun bind(cursor: Cursor) {
-            val text = cursor.getString(cursor.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_QUERY))
-            val isHistory = cursor.getInt(cursor.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_IS_HISTORY)) != 0
-            val searchType = cursor.getString(cursor.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE))
+            val text =
+                cursor.getString(cursor.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_QUERY))
+            val isHistory =
+                cursor.getInt(cursor.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_IS_HISTORY)) != 0
+            val searchType =
+                cursor.getString(cursor.getColumnIndexOrThrow(HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE))
             val isLastItem = cursor.isLast
             val historyItem = SearchHistoryItem(text, isHistory, searchType, isLastItem)
 

@@ -121,6 +121,7 @@ class CustomSearchView @JvmOverloads constructor(
                 closeSearch()
                 onTextChangeListener?.onBackPressed()
             }
+
             R.id.action_clear -> {
                 binding?.etSearch?.setText("")
             }

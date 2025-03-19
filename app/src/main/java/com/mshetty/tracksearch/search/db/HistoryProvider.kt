@@ -34,9 +34,16 @@ class HistoryProvider : ContentProvider() {
                 SEARCH_HISTORY -> when (selection) {
                     HistoryContract.HistoryEntry.COLUMN_IS_HISTORY -> fetchSearchHistory(context)
                     HistoryContract.HistoryEntry.COLUMN_QUERY,
-                    HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE -> fetchFilteredSearchResults(context, selectionArgs, selection, sortOrder)
+                    HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE -> fetchFilteredSearchResults(
+                        context,
+                        selectionArgs,
+                        selection,
+                        sortOrder
+                    )
+
                     else -> fetchSearchHistory(context)
                 }
+
                 else -> throw UnsupportedOperationException("Unknown Uri: $uri")
             }.also { cursor ->
                 cursor?.setNotificationUri(context.contentResolver, uri)
@@ -99,11 +106,14 @@ class HistoryProvider : ContentProvider() {
                 SEARCH_HISTORY -> {
                     context?.let {
                         withContext(Dispatchers.IO) {
-                            selectionArgs?.let { it1 -> searchRoomDatabase?.searchDao()?.delete(it1) }
+                            selectionArgs?.let { it1 ->
+                                searchRoomDatabase?.searchDao()?.delete(it1)
+                            }
                                 ?: 0
                         }
                     } ?: 0
                 }
+
                 else -> throw UnsupportedOperationException("Unknown Uri: $uri")
             }.also { rows ->
                 if (rows > 0) {
@@ -145,6 +155,7 @@ suspend fun fetchFilteredSearchResults(
                         database.searchDao().getSearchFilter(selectionArgs, sortOrder)
                     }
                 }
+
                 else -> database.searchDao().getSearchFilterOnType(selectionArgs)
             }
         }
