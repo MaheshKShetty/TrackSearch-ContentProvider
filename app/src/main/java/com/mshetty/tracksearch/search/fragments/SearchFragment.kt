@@ -83,7 +83,8 @@ class SearchFragment : Fragment(), CustomSearchView.OnTextChangeListener {
         val uri = HistoryContract.HistoryEntry.CONTENT_URI
         val selection = filter?.let { "${HistoryContract.HistoryEntry.COLUMN_QUERY} LIKE ?" }
         val selectionArgs = filter?.let { arrayOf("%$it%") }
-        val cursor: Cursor? = context?.contentResolver?.query(uri, null, selection, selectionArgs, null)
+        val cursor: Cursor? =
+            context?.contentResolver?.query(uri, null, selection, selectionArgs, null)
         adapter.swapCursor(cursor)
     }
 
@@ -115,7 +116,13 @@ class SearchFragment : Fragment(), CustomSearchView.OnTextChangeListener {
         context?.let {
             AlertDialog.Builder(it)
                 .setTitle(getString(R.string.exit_dialog))
-                .setPositiveButton(getString(R.string.exit)) { _, _ -> activity?.let { finishAffinity(it) } }
+                .setPositiveButton(getString(R.string.exit)) { _, _ ->
+                    activity?.let {
+                        finishAffinity(
+                            it
+                        )
+                    }
+                }
                 .setNegativeButton(getString(R.string.cancel)) { dialog, _ -> dialog.dismiss() }
                 .setCancelable(false)
                 .show()

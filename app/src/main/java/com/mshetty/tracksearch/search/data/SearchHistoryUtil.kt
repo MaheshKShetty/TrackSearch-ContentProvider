@@ -15,11 +15,11 @@ object SearchHistoryUtil {
     fun saveQueryToDb(context: Context, query: String?, time: Long, type: String?) {
         if (!TextUtils.isEmpty(query) && time > 0) {
             val values = ContentValues()
-            values.put(HistoryContract.HistoryEntry.COLUMN_QUERY,query)
-            values.put(HistoryContract.HistoryEntry.COLUMN_INSERT_DATE,time)
-            values.put(HistoryContract.HistoryEntry.COLUMN_IS_HISTORY,1)
-            values.put(HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE,type)
-            context.contentResolver.insert(HistoryContract.HistoryEntry.CONTENT_URI,values)
+            values.put(HistoryContract.HistoryEntry.COLUMN_QUERY, query)
+            values.put(HistoryContract.HistoryEntry.COLUMN_INSERT_DATE, time)
+            values.put(HistoryContract.HistoryEntry.COLUMN_IS_HISTORY, 1)
+            values.put(HistoryContract.HistoryEntry.COLUMN_QUERY_TYPE, type)
+            context.contentResolver.insert(HistoryContract.HistoryEntry.CONTENT_URI, values)
         }
     }
 
@@ -29,7 +29,7 @@ object SearchHistoryUtil {
             "${HistoryContract.HistoryEntry.COLUMN_QUERY} = ?",
             arrayOf(query.trim())
         )
-        if(rowsDeleted == -1){
+        if (rowsDeleted == -1) {
             Log.e("TAG", "Error deleting item from database")
         }
     }

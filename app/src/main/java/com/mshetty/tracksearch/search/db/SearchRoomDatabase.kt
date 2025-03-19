@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.mshetty.tracksearch.search.data.SearchEntity
 import com.mshetty.tracksearch.search.db.dao.SearchDao
 
-@Database(entities = [SearchEntity::class], version = 1,exportSchema = false)
+@Database(entities = [SearchEntity::class], version = 1, exportSchema = false)
 abstract class SearchRoomDatabase : RoomDatabase() {
 
     abstract fun searchDao(): SearchDao
@@ -23,7 +23,11 @@ abstract class SearchRoomDatabase : RoomDatabase() {
         }
 
         private fun buildDatabase(context: Context): SearchRoomDatabase {
-            return Room.databaseBuilder(context, SearchRoomDatabase::class.java, "SEARCH_HISTORY.db")
+            return Room.databaseBuilder(
+                context,
+                SearchRoomDatabase::class.java,
+                "SEARCH_HISTORY.db"
+            )
                 .build()
         }
     }

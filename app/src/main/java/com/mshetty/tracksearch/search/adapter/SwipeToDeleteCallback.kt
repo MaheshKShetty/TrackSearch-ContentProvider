@@ -41,8 +41,11 @@ class SwipeToDeleteCallback(
             paint.color = deleteBackgroundColor
 
             c.drawRect(
-                itemView.right + dX, itemView.top.toFloat(),
-                itemView.right.toFloat(), itemView.bottom.toFloat(), paint
+                itemView.right + dX,
+                itemView.top.toFloat(),
+                itemView.right.toFloat(),
+                itemView.bottom.toFloat(),
+                paint
             )
             paint.color = Color.WHITE
             paint.textSize = 40f
