@@ -24,7 +24,7 @@ class SearchRecyclerAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ivSuggestion: AppCompatImageView = itemView.findViewById(R.id.ivSuggesstion)
         private val tvSuggestion: AppCompatTextView = itemView.findViewById(R.id.tvSuggestion)
-        private val clContainer: ConstraintLayout = itemView.findViewById(R.id.clContainer)
+        val clContainer: ConstraintLayout = itemView.findViewById(R.id.clContainer)
         private var divider: View? = itemView.findViewById(R.id.divider)
 
         fun bind(cursor: Cursor) {

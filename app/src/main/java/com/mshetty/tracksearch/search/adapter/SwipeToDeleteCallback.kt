@@ -1,9 +1,10 @@
+package com.mshetty.tracksearch.search.adapter
+
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.mshetty.tracksearch.search.adapter.SearchRecyclerAdapter
 
 class SwipeToDeleteCallback(
     private val adapter: SearchRecyclerAdapter,
