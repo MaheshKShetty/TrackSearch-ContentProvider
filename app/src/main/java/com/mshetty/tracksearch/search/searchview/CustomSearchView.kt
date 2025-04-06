@@ -15,6 +15,7 @@ import com.mshetty.tracksearch.R
 import com.mshetty.tracksearch.databinding.LayoutSearchViewBinding
 import com.mshetty.tracksearch.search.searchview.Utils.hideKeyboard
 import com.mshetty.tracksearch.search.searchview.Utils.showKeyboard
+import androidx.core.text.trimmedLength
 
 class CustomSearchView @JvmOverloads constructor(
     context: Context,
@@ -82,7 +83,7 @@ class CustomSearchView @JvmOverloads constructor(
 
     private fun onSubmitQuery() {
         val query = binding?.etSearch?.text
-        if (query != null && TextUtils.getTrimmedLength(query) > 0) {
+        if (query != null && query.trimmedLength() > 0) {
             onTextChangeListener?.onQuerySubmit(query.toString())
             closeSearch()
             binding?.etSearch?.setText("")
